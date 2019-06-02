@@ -1,0 +1,1 @@
+virt-install --name "openbsd" --memory "1000" --vcpus=4 --cpuset=auto --cpu host --cdrom="/kvm_pool/isos/install61.iso" --os-variant="openbsd5.8" --disk pool="kvm_pool",size="100" --network network="servers" --graphics vnc,password="lab",listen="127.0.0.1",port=6005

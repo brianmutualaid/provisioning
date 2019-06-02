@@ -1,0 +1,26 @@
+#cloud-config
+timezone: UTC
+hostname: nextcloud
+disable_root: true
+ssh_pwauth: false
+package_update: true
+package_upgrade: true
+packages:
+  - tmux
+  - vim
+  - dnsutils
+  - unattended-upgrades
+users:
+  - name: nc-admin
+    groups: sudo
+    shell: /bin/bash
+    sudo:
+      - ALL=(ALL) NOPASSWD:ALL
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHw7mZGTTViwMQu0VaBCod578uDXsweDlp5FVKtsS9ylTu2cGQcpnLKaErRI4pWtXlRkXHW0wMXLOLG0V/yx1/UeRLM3cNkLqCpZClkAwNOB45hbwZ4/LhSLRxkcvk/HWCreVSOR1xe/JYARRxLLo0gnbn3Wb8m7xL6d6IV+QgFz1P+sgTj8TU27XIEt00dMkxVDYIeB6p8sk3wbHu2z/F5xG3dUatev8Q2AMwA5N48cZs/esg+MAtvxTj6Mjs7HsRcV6Il7fOB5CTje+YbfP2UAA2QbjL/IGCWTXZWLjpK9Dh4AB9MCeotb2vc4g+H6R7KPDHm7VUIx63GJxv+TF3 brian@Brians-MacBook.local
+run_cmd:
+  - [ systemctl, enable, ufw ]
+  - [ systemctl, start, ufw ]
+  - [ sed, -i, "'s/\"${distro_id}:${distro_codename}\";/\/\/"${distro_id}:${distro_codename}\"/g'", /etc/apt/apt.conf.d/50unattended-upgrades ]
+  - [ systemctl, restart, unattended-upgrades ]
+  - [ snap, install, nextcloud ]

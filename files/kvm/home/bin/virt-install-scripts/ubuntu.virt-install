@@ -1,0 +1,1 @@
+virt-install --name "ubuntu01" --memory "4000" --vcpus=4 --cpuset=auto --cpu host --cdrom="/kvm_pool/isos/ubuntu-17.04-desktop-amd64.iso" --os-variant="ubuntu16.04" --disk pool="kvm_pool",size="100" --network network="trusted" --graphics vnc,password="lab",listen="127.0.0.1",port=6009

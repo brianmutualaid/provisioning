@@ -1,0 +1,1 @@
+virt-install --name "win701" --memory "1000" --vcpus=4 --cpuset=auto --cpu host --cdrom="/kvm_pool/isos/Windows 7 SP1 Ultimate.iso" --os-variant="win7" --disk pool="kvm_pool",size="50" --network network="pentesting" --graphics vnc,password="lab",listen="127.0.0.1",port=6012

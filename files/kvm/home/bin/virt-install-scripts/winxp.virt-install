@@ -1,0 +1,1 @@
+virt-install --name "winxp01" --memory "512" --vcpus=4 --cpuset=auto --cpu host --cdrom="/kvm_pool/isos/Windows XP SP3.iso" --os-variant="winxp" --disk pool="kvm_pool",size="50" --network network="pentesting" --graphics vnc,password="lab",listen="127.0.0.1",port=6011

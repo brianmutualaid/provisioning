@@ -1,0 +1,12 @@
+$TTL 1d
+@ IN SOA !domain!. root.!domain!. (
+  1     ; serial
+  1h    ; refresh
+  30m   ; retry
+  7d    ; expiration
+  1h )  ; minimum
+
+  NS !hostname!.
+  
+@ 10800 IN A 192.168.1.1
+!short_hostname! 10800 IN A 192.168.1.1
