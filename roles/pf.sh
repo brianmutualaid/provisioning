@@ -65,7 +65,14 @@ if [ "$help" = "yes" ]; then
     usage
 fi
 
-"${provisioning_base_dir}/lib/base.sh" -o openbsd -n "$hostname" -u "$username" -t "$timezone" -f "$files"
+. "${provisioning_base_dir}/lib/base.sh"
+base_setup \
+  -o openbsd \
+  -n "$hostname" \
+  -u "$username" \
+  -t "$timezone" \
+  -f "$files"
+
 "${provisioning_base_dir}/scripts/pf/01.sh" "$files" "$extif" "$intif" "$hostname" "$domain"
 if [ "$openvpn" = "yes" ]; then
     # Run OpenVPN role script; -s skips common setup like hostname and username
