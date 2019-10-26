@@ -80,7 +80,7 @@ setup_user() {
     fi
     #chmod 600 /home/"${username}"/.ssh/*
     # Prompt for a public key if no authorized_keys file was provided or if its empty
-    if [ ! -f "/home/${username}/.ssh/authorized_keys" -o -s "/home/${username}/.ssh/authorized_keys"]; then
+    if [ ! -f "/home/${username}/.ssh/authorized_keys" -o -s "/home/${username}/.ssh/authorized_keys" ]; then
         printf '\\nNo authorized_keys files was copied to ~/.ssh. Enter a public key: '
         read public_ssh_key
         printf "%s" "$public_ssh_key" >> "/home/${username}/.ssh/authorized_keys"
