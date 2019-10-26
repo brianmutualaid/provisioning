@@ -1,0 +1,3 @@
+vnetid 30 parent em1
+inet 172.17.30.1 255.255.255.0
+up
