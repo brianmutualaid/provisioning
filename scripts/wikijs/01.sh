@@ -1,28 +1,40 @@
 #!/bin/bash
 
+# Include template function and set default files dir
+. "${provisioning_base_dir}/lib/template.sh"
+default_files=$(readlink -f ../files)
+
 # From https://github.com/nodesource/distributions/blob/master/README.md#deb
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 apt-get install -y nodejs
 
-# From https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
-apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
-echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
-apt-get update
-apt-get install -y mongodb-org
-systemctl start mongod
-systemctl enable mongod
+apt-get install -y postgresql postgresql-contrib
+sudo -u postgres createdb wiki
+printf 'Password for wiki PostgreSQL user: '
+stty -echo
+read password
+stty echo
+sudo -u postgres psql -c "CREATE USER wiki WITH PASSWORD '$password';"
 
 # User for node process
 if [ !$(id -u node) ]; then
   useradd -r -m -s /usr/sbin/nologin node
 fi
 
-# From https://docs.requarks.io/wiki/install/installation
 if [ ! -d /home/node/wikijs ]; then
   sudo -u node mkdir /home/node/wikijs
   pushd /home/node/wikijs
   sudo -u node curl -sSo- https://wiki.js.org/install.sh | sudo -u node bash
+  sudo -u node curl -L -O https://github.com/Requarks/wiki/releases/download/2.0.0-rc.17/wiki-js.tar.gz
+  sudo -u node mkdir wiki
+  sudo -u node tar xzf wiki-js.tar.gz -C ./wiki
   popd
+  # Put the config.yml file in place
+  template \
+    -f "${default_files}/wikijs/home/node/wiki/config.yml" \
+    -t "/home/node/wiki/config.yml" \
+    -c "psqlpassword ${password}" \
+    -o "node"
 else
   printf "/home/node/wikijs already exists, skipping installation...\\n"
 fi
@@ -40,4 +52,4 @@ letsencrypt certonly -n --standalone -d "$2" --agree-tos --email "$3"
 systemctl start nginx
 systemctl enable nginx
 
-echo "Run 'node wiki configure' from /home/node/wikijs to start the configuration process!"
+echo "Run 'node server' from /home/node/wikijs to start the configuration process!"
