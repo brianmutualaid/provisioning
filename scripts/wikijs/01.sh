@@ -21,10 +21,8 @@ if [ !$(id -u node) ]; then
   useradd -r -m -s /usr/sbin/nologin node
 fi
 
-if [ ! -d /home/node/wikijs ]; then
-  sudo -u node mkdir /home/node/wikijs
-  pushd /home/node/wikijs
-  sudo -u node curl -sSo- https://wiki.js.org/install.sh | sudo -u node bash
+if [ ! -d /home/node/wiki ]; then
+  pushd /home/node
   sudo -u node curl -L -O https://github.com/Requarks/wiki/releases/download/2.0.0-rc.17/wiki-js.tar.gz
   sudo -u node mkdir wiki
   sudo -u node tar xzf wiki-js.tar.gz -C ./wiki
@@ -36,7 +34,7 @@ if [ ! -d /home/node/wikijs ]; then
     -c "psqlpassword ${password}" \
     -o "node"
 else
-  printf "/home/node/wikijs already exists, skipping installation...\\n"
+  printf "/home/node/wiki already exists, skipping installation...\\n"
 fi
 
 # Set up nginx reverse proxy
