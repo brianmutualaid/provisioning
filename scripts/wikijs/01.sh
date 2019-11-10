@@ -33,6 +33,13 @@ if [ ! -d /home/node/wiki ]; then
     -t "/home/node/wiki/config.yml" \
     -c "psqlpassword ${password}" \
     -o "node"
+  # Put the systemd service file in place
+  template \
+    -f "${default_files}/wikijs/etc/systemd/system/wiki.service" \
+    -t "/etc/systemd/system/wiki.service"
+  systemctl daemon-reload
+  systemctl start wiki
+  systemctl enable wiki
 else
   printf "/home/node/wiki already exists, skipping installation...\\n"
 fi
@@ -40,9 +47,11 @@ fi
 # Set up nginx reverse proxy
 apt-get -y install nginx
 systemctl stop nginx
-cp "$1"/wikijs/etc/nginx/nginx.conf /etc/nginx/nginx.conf
-cp "$1"/wikijs/etc/nginx/conf.d/web.conf /etc/nginx/conf.d/web.conf
-sed -i "s/example.com/$2/g" /etc/nginx/conf.d/web.conf
+template -f "${default_files}/wikijs/etc/nginx/nginx.conf" -t "/etc/nginx/nginx.conf"
+template \
+  -f "${default_files}/wikijs/etc/nginx/conf.d/web.conf" \
+  -t "/etc/nginx/conf.d/web.conf" \
+  -c "example.com ${2}"
 ufw allow http
 ufw allow https
 apt-get -y install certbot
@@ -50,4 +59,6 @@ letsencrypt certonly -n --standalone -d "$2" --agree-tos --email "$3"
 systemctl start nginx
 systemctl enable nginx
 
-echo "Run 'node server' from /home/node/wikijs to start the configuration process!"
+echo "The wiki is running! Go to the domain name you configured to complete the configuration process. Also consider setting up certbot to run on regular intervals in the root user's crontab with a line like the following:
+
+13 * * * * /usr/bin/certbot renew --nginx --quiet --renew-hook \"systemctl reload nginx\""
