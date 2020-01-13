@@ -59,6 +59,15 @@ letsencrypt certonly -n --standalone -d "$2" --agree-tos --email "$3"
 systemctl start nginx
 systemctl enable nginx
 
+# Set up a mail relay for local user password resets
+DEBIAN_FRONTEND=noninteractive apt-get -y install mailutils
+template \
+  -f "${default_files}/wikijs/etc/postfix/main.cf" \
+  -t "/etc/postfix/main.cf" \
+  -c "example.com ${2}"
+systemctl start postfix
+systemctl enable postfix
+
 echo "The wiki is running! Go to the domain name you configured to complete the configuration process. Also consider setting up certbot to run on regular intervals in the root user's crontab with a line like the following:
 
 13 * * * * /usr/bin/certbot renew --nginx --quiet --renew-hook \"systemctl reload nginx\""
