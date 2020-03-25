@@ -53,9 +53,16 @@ set_prefix() {
 }
 
 set_netmask() {
-  mask_bits=''
-  for (( i=0; i < "$1"; i++)); do
-    mask_bits="${mask_bits}1"
+  mask_bits=""
+  i="0"
+  while true; do
+    if [ "$i" -lt "$1" ]; then
+      mask_bits="${mask_bits}1"
+      i=$(expr "$i" + 1)
+      continue
+    else
+      break
+    fi
   done
   binary_netmask=$(printf "%-32s" "$mask_bits" | tr ' ' '0')
   convert_binary_to_decimal_ip "$binary_netmask"
