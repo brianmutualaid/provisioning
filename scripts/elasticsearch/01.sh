@@ -15,7 +15,7 @@ autorefresh=1
 type=rpm-md
 EOF
 
-dnf install --enablerepo=elasticsearch elasticsearch
+dnf -y install --enablerepo=elasticsearch elasticsearch
 
 /bin/systemctl daemon-reload
 /bin/systemctl enable elasticsearch.service
