@@ -9,7 +9,7 @@ substitute() {
 }
 
 compare() {
-    if ! diff "$1" "$2" 2> /dev/null; then
+    if ! diff "$1" "$2" > /dev/null; then
         if [ -f "$2" ]; then
             cp "$2" "$2".$(date +%Y-%m-%d_%H:%M:%S)
         else
