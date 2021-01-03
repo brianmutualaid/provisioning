@@ -105,7 +105,7 @@ configure_sshd() {
 	fi
 }
 
-enable_and_run_automatic_updates() {
+enable_automatic_updates() {
     case "$os" in
         centos)
 			yum -y install yum-cron
@@ -116,7 +116,7 @@ enable_and_run_automatic_updates() {
 			sed -i 's/#apply_updates = yes/apply_updates = yes/g' /etc/yum/yum-cron.conf
 			systemctl enable yum-cron
 			systemctl start yum-cron
-			yum-cron
+			#yum-cron
             ;;
         ubuntu)
             apt-get -y install unattended-upgrades
@@ -124,12 +124,12 @@ enable_and_run_automatic_updates() {
 			sed -i 's/"${distro_id}:${distro_codename}";/\/\/"${distro_id}:${distro_codename}"/g' /etc/apt/apt.conf.d/50unattended-upgrades
 			systemctl start unattended-upgrades
 			systemctl enable unattended-upgrades
-			unattended-upgrades
+			#unattended-upgrades
             ;;
         openbsd)
 			syspatch_crontab_entry="0 4 * * * /usr/sbin/syspatch"
 			(crontab -l -u root | grep -v -F "$syspatch_crontab_entry"; printf "$syspatch_crontab_entry\\n" ) | crontab -u root -
-			syspatch
+			#syspatch
             ;;
     esac
 }
@@ -170,5 +170,5 @@ base_setup() {
         setup_user
         configure_sshd
     fi
-    enable_and_run_automatic_updates
+    enable_automatic_updates
 }
