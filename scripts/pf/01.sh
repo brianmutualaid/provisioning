@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# Script to set up pf on OpenBSD 6.2
+# Script to set up pf on OpenBSD
 #
 
 # Include template function

@@ -62,31 +62,23 @@ setup_user() {
                 ;;
         esac
     fi
-    # Copy dotfiles to home directory
-#    if ls "$files"/common/home/.* > /dev/null 2>&1; then
-#        home_file_path="${files}/common/home"
-#    else
-#        home_file_path="${default_files}/common/home"
-#    fi
-#    template \
-#        -f "${home_file_path}/.*" \
-#        -t "/home/${username}" \
-#        -p '600' \
-#        -o "${username}:${username}"
-#    # Set proper permissions on ~/.ssh
+    # Set proper permissions on ~/.ssh
     if [ ! -d "/home/${username}/.ssh" ]; then
         mkdir "/home/${username}/.ssh"
         chmod 700 "/home/${username}/.ssh"
     fi
-    #chmod 600 /home/"${username}"/.ssh/*
+    # Copy authorized_keys file
+    cp "$authorized_keys_file" "/home/${username}/.ssh/"
+    chmod 600 "/home/${username}/.ssh/authorized_keys"
+    chown "${username}:${username}" "/home/${username}/.ssh/authorized_keys"
     # Prompt for a public key if no authorized_keys file was provided or if its empty
-    if [ ! -f "/home/${username}/.ssh/authorized_keys" -o ! -s "/home/${username}/.ssh/authorized_keys" ]; then
-        printf '\\nNo authorized_keys files was copied to ~/.ssh. Enter a public key: '
-        read public_ssh_key
-        printf "%s" "$public_ssh_key" >> "/home/${username}/.ssh/authorized_keys"
-        chmod 600 "/home/${username}/.ssh/authorized_keys"
-        chown -R "${username}:${username}" "/home/${username}/.ssh"
-    fi
+#    if [ ! -f "/home/${username}/.ssh/authorized_keys" -o ! -s "/home/${username}/.ssh/authorized_keys" ]; then
+#        printf '\\nNo authorized_keys files was copied to ~/.ssh. Enter a public key: '
+#        read public_ssh_key
+#        printf "%s" "$public_ssh_key" >> "/home/${username}/.ssh/authorized_keys"
+#        chmod 600 "/home/${username}/.ssh/authorized_keys"
+#        chown -R "${username}:${username}" "/home/${username}/.ssh"
+#    fi
 }
 
 configure_sshd() {
@@ -150,7 +142,7 @@ base_setup() {
             -n) hostname="$2"; shift;;
             -u) username="$2"; shift;;
             -t) timezone="$2"; shift;;
-            -f) files="$2"; shift;;
+            -a) authorized_keys_file="$2"; shift;;
             *) break
         esac
         shift
@@ -172,8 +164,6 @@ base_setup() {
     fi
     # Load template functions
     . "${provisioning_base_dir}/lib/template.sh"
-    # Set default files directory for fallback
-    default_files=$(readlink -f ../files)
     enable_firewall
     if [ "$cloudinit" != "yes" ]; then
         set_hostname_and_timezone
